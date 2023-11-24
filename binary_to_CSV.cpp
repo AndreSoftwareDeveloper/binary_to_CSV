@@ -11,7 +11,7 @@ struct Record {
     uint8_t C;
     uint32_t D;
     float E;
-    uint64_t F;
+    uint64_t F : 64;
     uint8_t G : 7;
 };
 
@@ -29,15 +29,17 @@ int main() {
     ofstream output(outputFileName);
     output << "A,D,E,G" << endl;
 
+    uint64_t temp;
     Record record;
-    while (input.peek() != EOF) {     
+    while (input.peek() != EOF) {
         input.read(reinterpret_cast<char*>(&record.A), sizeof(record.A));
         input.read(&record.B, sizeof(record.B));
         input.read(reinterpret_cast<char*>(&record.C), sizeof(record.C));
         input.read(reinterpret_cast<char*>(&record.D), sizeof(record.D));
         input.read(reinterpret_cast<char*>(&record.E), sizeof(record.E));
-        input.read(reinterpret_cast<char*>(&record.F), sizeof(record.F));
-
+                
+        input.read(reinterpret_cast<char*>(&temp), sizeof(temp));
+        record.F = temp;
         record.G = static_cast<int8_t>((record.F >> 10) & 0x7F);
 
         output << record.A << "," << record.D << ","
